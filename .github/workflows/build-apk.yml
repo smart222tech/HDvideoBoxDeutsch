@@ -3,7 +3,7 @@ name: Build DeutschStream APK
 on:
   push:
     paths:
-      - "DeutschStream_Variante_C_Projekt.zip"
+      - "DeutschStream/**"
       - ".github/workflows/build-apk.yml"
   workflow_dispatch:
 
@@ -31,20 +31,17 @@ jobs:
         with:
           gradle-version: "8.13"
 
-      - name: Unpack DeutschStream source
-        run: |
-          test -f DeutschStream_Variante_C_Projekt.zip
-          unzip -q DeutschStream_Variante_C_Projekt.zip -d source
-          test -f source/DeutschStream/settings.gradle.kts
+      - name: Verify project
+        run: test -f DeutschStream/settings.gradle.kts
 
       - name: Build debug APK
-        working-directory: source/DeutschStream
+        working-directory: DeutschStream
         run: gradle --no-daemon assembleDebug --stacktrace
 
       - name: Upload APK
         uses: actions/upload-artifact@v4
         with:
           name: DeutschStream-debug-apk
-          path: source/DeutschStream/app/build/outputs/apk/debug/app-debug.apk
+          path: DeutschStream/app/build/outputs/apk/debug/app-debug.apk
           if-no-files-found: error
           retention-days: 14
